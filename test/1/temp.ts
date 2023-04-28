@@ -1,0 +1,1 @@
+export const kys = "kill yee self DUUDE"

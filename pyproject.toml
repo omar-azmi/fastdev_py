@@ -1,0 +1,49 @@
+[build-system]
+requires = ["flit_core"]
+build-backend = "flit_core.buildapi"
+
+[project]
+name = "fastdev"
+authors = [{ name = "Omar Azmi" }]
+readme = "./readme.md"
+requires-python = ">=3.11"
+keywords = ["devserver", "dev-server", "devtools", "sever", "liveserver", "live-server"]
+license = { text = "undefined" }
+dependencies = ["fastapi"]
+version = "0.1.0"
+description = "FastAPI development server that JIT preprocess TS, TSX, SCSS, etc... files."
+
+[tool.flit.metadata]
+module = "fastdev"
+src = "src"
+
+[project.urls]
+Source = "https://github.com/omar-azmi/fastdev_py"
+
+[tool.autopep8]
+max_line_length = 512
+ignore = ["W191", "E701", "C0103"]
+
+[tool.isort]
+profile = "black"
+line_length = 80
+indent = "\t"
+multi_line_output = 5
+lines_between_sections = 0
+
+[tool.pylint.messages_control]
+max-line-length = 512
+indent-string = "\t"
+disable = [
+	"missing-docstring",
+	"invalid-name",
+	"line-too-long",
+	"too-many-arguments",
+	"C0321",
+]
+
+[tool.pylint.design]
+# limiting the number of returns might discourage
+# the use of guard clauses. So we increase the
+# allowed number of returns from 6 to 8
+max-returns = 8
