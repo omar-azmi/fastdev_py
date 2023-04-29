@@ -1,9 +1,15 @@
 import mimetypes
 from pathlib import Path
 
-PORT: int = 8000 
-PROJ_DIR: Path = Path(__file__).absolute().parent.parent # this module's project's root directory
-CWSD: Path = Path.cwd()  # current server working directory
+Port: int = 8000 
+ModDir: Path = Path(__file__).absolute().parent # this module's root directory
+SWD: Path = Path.cwd()  # current working directory is where the server was invoked
+ESBuildConfig = {
+	"path": "./path/to/script.ts",
+	"config": {"minify": False},
+	"plugins": ["solid"],
+	"plugins_config": dict(),
+}
 include_mime_types = {
 	# files requiring preprocessing must have the same mime type as their compiled counterparts:
 	".ts": "text/javascript",

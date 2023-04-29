@@ -1,12 +1,12 @@
 from pathlib import Path
-from fastapi.responses import FileResponse, HTMLResponse, PlainTextResponse
-from .config import CWSD, mimetypes
+from fastapi.responses import FileResponse, HTMLResponse, PlainTextResponse, RedirectResponse
+from .config import SWD
 from .utils import qoute
 
 
 async def serve_file(file: Path):
 	if not file.is_file():
-		return PlainTextResponse(status_code=404, content=f"the following file was not found:\n\t{file}")
+		return PlainTextResponse(f"the following file was not found:\n\t{file}", status_code=404)
 	""" fastapi takes care of custom mime types when they're added to the built-in `mintypes` library
 	mime, _ = mimetypes.guess_type(file)
 	if mime is None:
@@ -18,11 +18,16 @@ async def serve_file(file: Path):
 
 async def serve_dir(directory: Path):
 	if not directory.is_dir():
-		return PlainTextResponse(status_code=404, content=f"the following directory was not found:\n\t{directory}")
+		return PlainTextResponse(
+			f"the following directory was not found:\n\t{directory}",
+			status_code=404
+		)
 	directory_index = directory.joinpath("./index.html")
 	if directory_index.is_file():
-		return await serve_file(directory_index)
-	dir_head = directory.relative_to(CWSD)
+		index_html_url = "/" + str(directory_index.relative_to(SWD).as_posix())
+		print(f"index.html found. redirecting to:\n\t{index_html_url}")
+		return RedirectResponse(index_html_url)
+	dir_head = directory.relative_to(SWD)
 	dir_links: dict[str, str] = dict()  # key: href_path, value: title
 	for subpath in directory.iterdir():
 		rel_subpath = subpath.relative_to(directory)
@@ -48,4 +53,4 @@ async def serve_dir(directory: Path):
 	</body>
 	</html>
 	"""
-	return HTMLResponse(content=html)
+	return HTMLResponse(html)

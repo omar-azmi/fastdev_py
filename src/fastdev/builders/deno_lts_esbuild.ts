@@ -40,6 +40,8 @@ cli_args.cwd ??= "./"
 cli_args.cwd = cli_args.cwd.startsWith(".") || cli_args.cwd.startsWith("/") || cli_args.cwd === "" ? pathJoin(Deno.cwd(), cli_args.cwd) : cli_args.cwd
 cli_args.cache ??= true
 cli_args.port = parseInt(cli_args.port ?? 3000)
+console.debug("deno esbuild server was invoked with the following cli args:\n", cli_args)
+Deno.chdir(cli_args.cwd)
 
 const plugin_names = {
 	"deno": denoPlugins,
@@ -55,7 +57,7 @@ const hashString = (str: string): string => {
 	return BigUint64Array.of(hash)[0].toString(36)
 }
 const JSONstringifyOrdered = (obj: object, space?: string | number) => {
-	const all_keys = new Set()
+	const all_keys: Set<keyof typeof obj | string> = new Set()
 	JSON.stringify(obj, (key, value) => (all_keys.add(key), value))
 	return JSON.stringify(obj, Array.from(all_keys).sort(), space)
 }
@@ -164,7 +166,7 @@ const buildServerObject = async (build_query: RequestCompileFileBody): Promise<R
 		hash = hashObject(build_query),
 		{ path, config, plugins = [], plugins_config = {} } = build_query
 	let
-		abspath = pathJoin(cli_args.cwd!, path),
+		abspath = path, // pathJoin(cli_args.cwd!, path), // for now, abspath breaks some plugins, while relative path works with them all. so we choose the latter
 		path_last_modified = new Date()
 	try { path_last_modified = (await Deno.stat(abspath))?.mtime ?? path_last_modified }
 	catch { }

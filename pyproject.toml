@@ -3,19 +3,29 @@ requires = ["flit_core"]
 build-backend = "flit_core.buildapi"
 
 [project]
-name = "fastdev"
-authors = [{ name = "Omar Azmi" }]
-readme = "./readme.md"
-requires-python = ">=3.11"
-keywords = ["devserver", "dev-server", "devtools", "sever", "liveserver", "live-server"]
-license = { text = "undefined" }
-dependencies = ["fastapi"]
+name = "fastdev_py"
 version = "0.1.0"
 description = "FastAPI development server that JIT preprocess TS, TSX, SCSS, etc... files."
+readme = "./readme.md"
+requires-python = ">=3.11"
+license = { text = "undefined" }
+authors = [{ name = "Omar Azmi" }]
+dependencies = ["fastapi", "requests"]
+keywords = [
+	"devserver",
+	"dev-server",
+	"devtools",
+	"sever",
+	"liveserver",
+	"live-server",
+]
 
-[tool.flit.metadata]
-module = "fastdev"
-src = "src"
+[tool.flit.module]
+name = "fastdev"
+path = "src/fastdev"
+
+[project.scripts]
+fastdev = "fastdev.__main__:main"
 
 [project.urls]
 Source = "https://github.com/omar-azmi/fastdev_py"
