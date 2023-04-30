@@ -1,5 +1,7 @@
 from pathlib import Path
-from fastapi.responses import FileResponse, HTMLResponse, PlainTextResponse, RedirectResponse
+from fastapi.responses import (
+	FileResponse, HTMLResponse, PlainTextResponse, RedirectResponse,
+)
 from .config import SWD
 from .utils import qoute
 
@@ -29,6 +31,7 @@ async def serve_dir(directory: Path):
 		return RedirectResponse(index_html_url)
 	dir_head = directory.relative_to(SWD)
 	dir_links: dict[str, str] = dict()  # key: href_path, value: title
+	dir_links[".."] = "./.."
 	for subpath in directory.iterdir():
 		rel_subpath = subpath.relative_to(directory)
 		href = str(rel_subpath)

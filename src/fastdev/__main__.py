@@ -1,5 +1,6 @@
 from typing import Annotated
 import uvicorn
+from fastapi import FastAPI
 from . import config
 
 
@@ -8,7 +9,10 @@ def main(*, host: str = "localhost", port: int = config.Port, esbuild_config: An
 		host = "0.0.0.0"
 	config.Port = port
 	config.ESBuildConfig.update(esbuild_config)
-	from .router import app
+	app = FastAPI()
+	from .__init__ import apply_route_path, apply_route_ts
+	apply_route_ts(app)
+	apply_route_path(app)
 	uvicorn.run(app, host=host, port=config.Port, reload=False)
 
 

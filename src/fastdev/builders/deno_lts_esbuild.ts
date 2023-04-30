@@ -26,7 +26,7 @@ import { ConnInfo, serve } from "https://deno.land/std@0.184.0/http/server.ts"
 import { join as pathJoin } from "https://deno.land/std@0.184.0/path/mod.ts"
 import { BuildOptions as ESBuildOptions, OutputFile as ESOutputFile, Plugin as ESPlugin, build as esbuild, stop as esstop } from "https://deno.land/x/esbuild@v0.17.18/mod.js"
 import { solidPlugin } from "https://esm.sh/esbuild-plugin-solid?external=esbuild"
-import { denoPlugins } from "https://raw.githubusercontent.com/lucacasonato/esbuild_deno_loader/main/mod.ts"
+import { denoPlugins } from "https://deno.land/x/esbuild_deno_loader@0.7.0/mod.ts"
 
 export interface CliArgs {
 	cwd?: string
