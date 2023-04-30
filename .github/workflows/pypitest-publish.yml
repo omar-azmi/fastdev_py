@@ -1,4 +1,4 @@
-name: Publish to PyPI
+name: Publish to PyPITest
 on: workflow_dispatch
 
 jobs:
@@ -16,7 +16,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install twine
           pip install flit
-      - name: Build and publish package
+      - name: Build and publish test package
         env:
           TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
           TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
