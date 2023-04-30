@@ -6,7 +6,7 @@ build-backend = "flit_core.buildapi"
 name = "fastdev_py"
 version = "0.2.1"
 description = "FastAPI development server that JIT preprocess TS, TSX, SCSS, etc... files."
-readme = "./readme.md"
+readme = "readme.md"
 requires-python = ">=3.11"
 license = { text = "undefined" }
 authors = [{ name = "Omar Azmi" }]
