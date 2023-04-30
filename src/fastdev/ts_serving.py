@@ -29,7 +29,7 @@ async def serve_ts(url_path: str):
 			status_code=503
 		)
 	return Response(
-		output_js_response.content,
-		status_code=output_js_response.status_code,
+		output_js_response["content"],
+		status_code=output_js_response["status_code"],
 		media_type="text/javascript"
 	)
