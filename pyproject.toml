@@ -8,7 +8,7 @@ version = "0.2.1"
 description = "FastAPI development server that JIT preprocess TS, TSX, SCSS, etc... files."
 readme = "readme.md"
 requires-python = ">=3.11"
-license = { text = "undefined" }
+license = { file = "license.md" }
 authors = [{ name = "Omar Azmi" }]
 dependencies = ["fastapi"]
 keywords = [
@@ -29,6 +29,7 @@ fastdev = "fastdev.__main__:main"
 
 [project.urls]
 Source = "https://github.com/omar-azmi/fastdev_py"
+Homepage = "https://github.com/omar-azmi/fastdev_py"
 
 [tool.autopep8]
 max_line_length = 512

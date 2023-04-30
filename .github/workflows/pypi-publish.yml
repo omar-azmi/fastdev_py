@@ -22,4 +22,4 @@ jobs:
           TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
         run: |
           python -m flit build
-          python -m twine upload -r pypi dist/*
+          python -m twine upload dist/*

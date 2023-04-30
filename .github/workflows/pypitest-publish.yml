@@ -1,4 +1,4 @@
-name: Publish to PyPITest
+name: Publish to TestPyPI
 on: workflow_dispatch
 
 jobs:
@@ -22,4 +22,4 @@ jobs:
           TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
         run: |
           python -m flit build
-          python -m twine upload -r pypitest dist/*
+          python -m twine upload -r https://test.pypi.org/legacy/ dist/*
