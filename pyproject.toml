@@ -3,7 +3,7 @@ requires = ["flit_core"]
 build-backend = "flit_core.buildapi"
 
 [project]
-name = "fastdev_py"
+name = "fastdev-py"
 version = "0.2.1"
 description = "FastAPI development server that JIT preprocess TS, TSX, SCSS, etc... files."
 readme = "readme.md"
