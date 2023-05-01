@@ -55,7 +55,7 @@ async def route_path(path: str):
 	elif abspath.is_dir():
 		if path.endswith("/") or SWD.samefile(abspath):
 			return await serve_dir(abspath)
-		return RedirectResponse(path + "/")
+		return RedirectResponse(("" if path.startswith("/") else "/") + path + "/")
 	else:
 		return PlainTextResponse(
 			f"the following request was uncaught by main router:\n\t{path}",
