@@ -1,6 +1,6 @@
 from typing import Type, TypeVar
 from fastapi import APIRouter, FastAPI, Request, Response
-from fastapi.responses import PlainTextResponse
+from fastapi.responses import PlainTextResponse, RedirectResponse
 from .config import SWD
 from .fs_serving import serve_dir, serve_file
 from .ts_serving import (
@@ -53,7 +53,9 @@ async def route_path(path: str):
 	elif abspath.is_file():
 		return await serve_file(abspath)
 	elif abspath.is_dir():
-		return await serve_dir(abspath)
+		if path.endswith("/") or SWD.samefile(abspath):
+			return await serve_dir(abspath)
+		return RedirectResponse(path + "/")
 	else:
 		return PlainTextResponse(
 			f"the following request was uncaught by main router:\n\t{path}",

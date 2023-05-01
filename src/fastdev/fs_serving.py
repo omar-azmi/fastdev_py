@@ -31,11 +31,13 @@ async def serve_dir(directory: Path):
 		return RedirectResponse(index_html_url)
 	dir_head = directory.relative_to(SWD)
 	dir_links: dict[str, str] = dict()  # key: href_path, value: title
-	dir_links[".."] = "./.."
+	dir_links["./.."] = ".."
 	for subpath in directory.iterdir():
 		rel_subpath = subpath.relative_to(directory)
-		href = str(rel_subpath)
-		title = href + ("" if subpath.is_file() else "/")
+		prefix = "./"
+		suffix = "" if subpath.is_file() else "/"
+		href = prefix + str(rel_subpath) + suffix
+		title = str(rel_subpath) + suffix
 		dir_links[href] = title
 	dir_links_html_li: list[str] = [f"""
 	<li><a href={qoute(href)}>{title}</a></li>

@@ -1,8 +1,8 @@
 import mimetypes
 from pathlib import Path
 
-Port: int = 8000 
-ModDir: Path = Path(__file__).absolute().parent # this module's root directory
+Port: int = 8000
+ModDir: Path = Path(__file__).absolute().parent  # this module's root directory
 SWD: Path = Path.cwd()  # current working directory is where the server was invoked
 ESBuildConfig = {
 	"path": "./path/to/script.ts",

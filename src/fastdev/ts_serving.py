@@ -1,9 +1,9 @@
 from asyncio import Future
 from subprocess import Popen
 from urllib.parse import urljoin
-from fastapi.responses import Response, PlainTextResponse
-from .config import SWD, Port, ModDir, ESBuildConfig
-from .utils import qoute, post_data
+from fastapi.responses import PlainTextResponse, Response
+from .config import SWD, ESBuildConfig, ModDir, Port
+from .utils import post_data, qoute
 
 BUILD_SERVER_PORT = 3000  # the port on which `deno_lts_esbuild.ts` listens for build requests
 build_server_loaded_promise = Future()

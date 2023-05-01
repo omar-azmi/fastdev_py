@@ -1,7 +1,6 @@
 import json
-from typing import Annotated, TypedDict, Optional, Literal
-from urllib.request import Request as urlRequest, urlopen
-from asyncio import gather, Future, run as async_run
+from typing import Annotated, Literal, Optional, TypedDict
+from urllib.request import Request, urlopen
 
 HTTPHeader = TypedDict("HTTPHeader", {
 	"content-type": Optional[Annotated[str, "mimetype"]],
@@ -9,12 +8,12 @@ HTTPHeader = TypedDict("HTTPHeader", {
 })
 HTTPMethod = Literal["GET", "POST", "PUT", "DELETE"]
 HTTPResponse = TypedDict("HTTPResponse", {
-	"status_code": int,
 	"content": Optional[bytes],
+	"status_code": int,
 })
 HTTPResponseText = TypedDict("HTTPResponseText", {
-	"status_code": int,
 	"content": Optional[str],
+	"status_code": int,
 })
 
 
@@ -32,11 +31,11 @@ def fetch(
 	method: HTTPMethod = "GET",
 	headers: HTTPHeader = dict()
 ) -> HTTPResponse:
-	with urlopen(urlRequest(url, content, headers=headers, method=method), timeout=timeout) as response:
-		return {
-			"status_code": response.getcode(),
-			"content": response.read(),
-		}
+	with urlopen(Request(url, content, headers=headers, method=method), timeout=timeout) as response:
+		return HTTPResponse(
+			content=response.read(),
+			status_code=response.getcode(),
+		)
 
 
 def post_data(
@@ -49,8 +48,11 @@ def post_data(
 ) -> HTTPResponseText | None:
 	try:
 		response = fetch(url, json.dumps(data).encode("utf-8"), timeout, method=method, headers=headers)
-		if response["content"] is not None:
-			response["content"] = response["content"].decode("utf-8")
-		return response
+		if response["content"] is None:
+			return None
+		return HTTPResponseText(
+			content=response["content"].decode("utf-8"),
+			status_code=response["status_code"],
+		)
 	except:
 		return None
