@@ -1,7 +1,5 @@
 from pathlib import Path
-from fastapi.responses import (
-	FileResponse, HTMLResponse, PlainTextResponse, RedirectResponse,
-)
+from fastapi.responses import FileResponse, HTMLResponse, PlainTextResponse
 from .config import SWD
 from .utils import qoute
 
@@ -18,18 +16,13 @@ async def serve_file(file: Path):
 	return FileResponse(file)
 
 
-async def serve_dir(directory: Path):
+async def serve_dir(directory: Path, base_dir: Path = SWD):
 	if not directory.is_dir():
 		return PlainTextResponse(
 			f"the following directory was not found:\n\t{directory}",
 			status_code=404
 		)
-	directory_index = directory.joinpath("./index.html")
-	if directory_index.is_file():
-		index_html_url = "/" + str(directory_index.relative_to(SWD).as_posix())
-		print(f"index.html found. redirecting to:\n\t{index_html_url}")
-		return RedirectResponse(index_html_url)
-	dir_head = directory.relative_to(SWD)
+	dir_head = directory.relative_to(base_dir)
 	dir_links: dict[str, str] = dict()  # key: href_path, value: title
 	dir_links["./.."] = ".."
 	for subpath in directory.iterdir():

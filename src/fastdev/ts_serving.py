@@ -1,4 +1,5 @@
 from asyncio import Future
+from pathlib import Path
 from subprocess import Popen
 from urllib.parse import urljoin
 from fastapi.responses import PlainTextResponse, Response
@@ -14,18 +15,18 @@ build_server_url = f"http://localhost:{BUILD_SERVER_PORT}"
 build_server_process = Popen(f"deno run -A {qoute(build_server_path)} --port={BUILD_SERVER_PORT} --callback={qoute(build_server_callback)}", cwd=SWD)
 
 
-async def serve_ts(url_path: str):
+async def serve_ts(file: Path):
 	await build_server_loaded_promise
-	# file_abspath = SWD.joinpath(url_path)
+	file_abspath = file.relative_to(SWD)
 	output_js_response = post_data(
 		urljoin(build_server_url, "compile"),
-		{**ESBuildConfig, "path": url_path},
+		{**ESBuildConfig, "path": str(file_abspath)},
 		timeout=50_000,
 		headers={"content-type": "application/json"},
 	)
 	if output_js_response is None:
 		return PlainTextResponse(
-			f"failed to transpile and bundle the requested file:\n\t{url_path}",
+			f"failed to transpile and bundle the requested file:\n\t{file}",
 			status_code=503
 		)
 	return Response(
