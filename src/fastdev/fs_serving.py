@@ -26,7 +26,7 @@ async def serve_dir(directory: Path, base_dir: Path = SWD):
 	dir_links: dict[str, str] = dict()  # key: href_path, value: title
 	dir_links["./.."] = ".."
 	for subpath in directory.iterdir():
-		rel_subpath = subpath.relative_to(directory)
+		rel_subpath = subpath.relative_to(directory).as_posix()
 		prefix = "./"
 		suffix = "" if subpath.is_file() else "/"
 		href = prefix + str(rel_subpath) + suffix
