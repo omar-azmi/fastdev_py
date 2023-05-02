@@ -29,6 +29,7 @@ async def route_ts(
 	:type file_path: str
 	:param base_dir: \
 		filesystem path to mount onto your `base_url`. \
+		the path MUST be absolute (use `base_dir.absolute()`) \
 		defaults to SWD (server's root working directory)
 	:type base_dir: Path, optional
 	:param ext: \
@@ -78,13 +79,14 @@ def apply_route_ts(
 	for ext in exts:
 		fastapi_app.add_api_route(
 			base_url + "{file_path:path}" + ext,
-			partial(route_ts, base_dir=base_dir, ext=ext),
+			partial(route_ts, base_dir=base_dir.absolute(), ext=ext),
 			methods=["GET"]
 		)
 	return fastapi_app
 
 
 async def route_path(path: str, base_dir: Path = SWD):
+	# TODO add docstring and include: base_dir must be absolute
 	abspath = base_dir.joinpath(path)
 	if not abspath.exists():
 		return Response(status_code=404)
@@ -127,5 +129,5 @@ def apply_route_path(
 	:return: the provided `fastapi_app` gets returned back
 	:rtype: FastAPI | APIRouter
 	"""
-	fastapi_app.get(base_url + "{path:path}")(partial(route_path, base_dir=base_dir))
+	fastapi_app.get(base_url + "{path:path}")(partial(route_path, base_dir=base_dir.absolute()))
 	return fastapi_app

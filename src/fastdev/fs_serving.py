@@ -17,6 +17,7 @@ async def serve_file(file: Path):
 
 
 async def serve_dir(directory: Path, base_dir: Path = SWD):
+	# TODO add docstring and include: base_dir must be absolute
 	directory = directory.absolute()
 	if not directory.is_dir():
 		return PlainTextResponse(
