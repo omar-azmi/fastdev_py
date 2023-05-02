@@ -17,12 +17,13 @@ async def serve_file(file: Path):
 
 
 async def serve_dir(directory: Path, base_dir: Path = SWD):
+	directory = directory.absolute()
 	if not directory.is_dir():
 		return PlainTextResponse(
 			f"the following directory was not found:\n\t{directory}",
 			status_code=404
 		)
-	dir_head = directory.relative_to(base_dir)
+	dir_head = directory.relative_to(base_dir).as_posix()
 	dir_links: dict[str, str] = dict()  # key: href_path, value: title
 	dir_links["./.."] = ".."
 	for subpath in directory.iterdir():

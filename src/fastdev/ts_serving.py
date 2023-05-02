@@ -17,7 +17,7 @@ build_server_process = Popen(f"deno run -A {qoute(build_server_path)} --port={BU
 
 async def serve_ts(file: Path):
 	await build_server_loaded_promise
-	file_abspath = file.relative_to(SWD).as_posix()
+	file_abspath = file.absolute().relative_to(SWD).as_posix()
 	output_js_response = post_data(
 		urljoin(build_server_url, "compile"),
 		{**ESBuildConfig, "path": str(file_abspath)},
