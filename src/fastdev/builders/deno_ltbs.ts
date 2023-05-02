@@ -1,11 +1,11 @@
-/** # deno esbuild server
+/** # deno build server
  * ### about
- * this is a deno live-time-server (lts) that compiles the `GET` requested local filesystem file and
+ * this is a deno live-time-build-server (ltbs) that compiles the `GET` requested local filesystem file and
  * `Respond`s with the compiled javascript file as plain text string (with javascript mime type). <br>
  * 
  * ### cli
  * ```cmd
- * deno run -A "./deno_lts_esbuild.ts" --cwd="c:/my/project/folder/" --port="3000" --callback="http://localhost:8000/deno_lts_esbuild/loaded/"
+ * deno run -A "./deno_ltbs.ts" --cwd="c:/my/project/folder/" --port="3000" --callback="http://localhost:8000/deno_ltbs/loaded/"
  * ```
  * - `cwd`: set current working directory of this server. this is needed if your typescript files do relative imports
  *   - defaults to `"./"` (i.e. the directory where this script resides in)
@@ -40,7 +40,7 @@ cli_args.cwd ??= "./"
 cli_args.cwd = cli_args.cwd.startsWith(".") || cli_args.cwd.startsWith("/") || cli_args.cwd === "" ? pathJoin(Deno.cwd(), cli_args.cwd) : cli_args.cwd
 cli_args.cache ??= true
 cli_args.port = parseInt(cli_args.port ?? 3000)
-console.debug("deno esbuild server was invoked with the following cli args:\n", cli_args)
+console.debug("deno build server was invoked with the following cli args:\n", cli_args)
 Deno.chdir(cli_args.cwd)
 
 const plugin_names = {
@@ -263,7 +263,7 @@ const helloServer = (request: Request & { url: "/hello" | "/hello/", method: "GE
 	if (request.method === "GET") {
 		const ip = connection_info.remoteAddr
 		console.log(ip, "says Hi")
-		return new Response("welcome to esbuild server", { status: 200 })
+		return new Response("welcome to deno live-time-build-server", { status: 200 })
 	}
 	return new Response()
 }
@@ -286,7 +286,7 @@ serve(serverRouter, {
 	port: cli_args.port as number,
 	signal: abort_controller.signal,
 	onListen: ({ port, hostname }) => {
-		console.log(`esbuilds server started at:\n\thttp://${hostname}:${port}`)
+		console.log(`deno build server started at:\n\thttp://${hostname}:${port}`)
 		if (cli_args.callback) {
 			fetch(cli_args.callback, { method: "GET" })
 		}
