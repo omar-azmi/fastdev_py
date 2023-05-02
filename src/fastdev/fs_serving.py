@@ -1,22 +1,50 @@
 from pathlib import Path
+from typing import Optional
 from fastapi.responses import FileResponse, HTMLResponse, PlainTextResponse
 from .config import SWD
 from .utils import qoute
 
 
-async def serve_file(file: Path):
+async def serve_file(file: Path, media_type: Optional[str] = None) -> FileResponse:
+	""" server a file. the file path must either be absolute or relative to server's working directory (`SWD`)
+
+	:param file: path to the file to serve. file path must either be absolute or relative to `SWD`
+	:type file: Path
+	:param media_type: \
+		include an optional self defined mime type in header. \
+		if `None` is supplied, then fastapi will guess it using `mimetypes.guess_type(file)`. \
+		you can define your own standard library mime types before invoking fastapi, using: \
+		```py \
+		import mimetypes \
+		mimetypes.add_type("application/mymime", ".ext") \
+		```
+		defaults to None
+	:type media_type: Optional[str], optional
+	:return: an http response containing the file, or a 404 error with `PlainTextResponse` if the file is not found 
+	:rtype: FileResponse
+	"""
 	if not file.is_file():
 		return PlainTextResponse(f"the following file was not found:\n\t{file}", status_code=404)
-	""" fastapi takes care of custom mime types when they're added to the built-in `mintypes` library
-	mime, _ = mimetypes.guess_type(file)
-	if mime is None:
-		mime = "application/octet-stream"
-	return FileResponse(file, media_type=mime)
+	return FileResponse(file, media_type=media_type)
+
+
+async def serve_dir(directory: Path, base_dir: Path = SWD) -> HTMLResponse:
+	""" server a directory listing as html.
+
+	:param directory: path to the directory to list. it can either be absolute or relative to `SWD`
+	:type directory: Path
+	:param base_dir: \
+		the heading in the html will present the `directory`'s path relative to your supplied `base_dir`. \
+		make sure that `base_dir` is always an absolute path, and not a relative path to `SWD`. \
+		note that `base_dir` does not alter the interpretation `directory`, \
+		since `directory` will always either be absolute or rlative to `SWD`. \
+		defaults to SWD
+	:type base_dir: base_dir, optional
+	:return: \
+		an html response containing the directory listing and hyperlinks to its subcontent. \
+		a 404 error with `PlainTextResponse` will be returned if the provided `directory` is not found
+	:rtype: HTMLResponse
 	"""
-	return FileResponse(file)
-
-
-async def serve_dir(directory: Path, base_dir: Path = SWD):
 	# TODO add docstring and include: base_dir must be absolute
 	directory = directory.absolute()
 	if not directory.is_dir():

@@ -47,7 +47,7 @@ def apply_route_ts(
 	fastapi_app: Type[APP_OR_ROUTER],
 	base_url: str = "/",
 	base_dir: Path = SWD,
-	exts: list[str] = [".ts", ".tsx"]
+	exts: list[str] = [".ts", ".tsx", ".jsx"]
 ) -> APP_OR_ROUTER:
 	""" apply typescript routing to your provided FastAPI app. <br>
 	it's best if you apply this routing first, before applying any other routing <br>
@@ -66,7 +66,7 @@ def apply_route_ts(
 	:type base_dir: Path, optional
 	:param exts: \
 		name the extensions that your typescript files end with. \
-		defaults to [".ts", ".tsx"]
+		defaults to [".ts", ".tsx", ".jsx"]
 	:type exts: list[str], optional
 	:return: the provided `fastapi_app` gets returned back
 	:rtype: FastAPI | APIRouter
@@ -85,7 +85,7 @@ def apply_route_ts(
 	return fastapi_app
 
 
-async def route_path(path: str, base_dir: Path = SWD):
+async def route_fs(path: str, base_dir: Path = SWD):
 	# TODO add docstring and include: base_dir must be absolute
 	abspath = base_dir.joinpath(path)
 	if not abspath.exists():
@@ -107,7 +107,7 @@ async def route_path(path: str, base_dir: Path = SWD):
 		)
 
 
-def apply_route_path(
+def apply_route_fs(
 	fastapi_app: Type[APP_OR_ROUTER],
 	base_url: str = "/",
 	base_dir: Path = SWD
@@ -129,5 +129,5 @@ def apply_route_path(
 	:return: the provided `fastapi_app` gets returned back
 	:rtype: FastAPI | APIRouter
 	"""
-	fastapi_app.get(base_url + "{path:path}")(partial(route_path, base_dir=base_dir.absolute()))
+	fastapi_app.get(base_url + "{path:path}")(partial(route_fs, base_dir=base_dir.absolute()))
 	return fastapi_app
