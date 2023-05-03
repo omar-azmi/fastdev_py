@@ -8,7 +8,7 @@ from .utils import post_data, qoute
 
 BUILD_SERVER_PORT = 3000  # the port on which `deno_ltbs.ts` listens for build requests
 build_server_loaded_promise = Future()
-build_server_path = ModDir.joinpath("./builders/deno_ltbs.ts")
+build_server_path = ModDir.joinpath("./deno_ltbs/mod.ts")
 build_server_callback_path = "/deno_ltbs_loaded"
 build_server_callback = f"http://localhost:{Port}{build_server_callback_path}"
 build_server_url = f"http://localhost:{BUILD_SERVER_PORT}"
@@ -19,7 +19,7 @@ async def serve_ts(file: Path):
 	await build_server_loaded_promise
 	file_abspath = file.absolute().relative_to(SWD).as_posix()
 	output_js_response = post_data(
-		urljoin(build_server_url, "compile"),
+		urljoin(build_server_url, "esbuild"),
 		{**ESBuildConfig, "path": str(file_abspath)},
 		timeout=50_000,
 		headers={"content-type": "application/json"},
