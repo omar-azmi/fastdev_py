@@ -10,7 +10,8 @@ def main(*, host: str = "localhost", port: int = config.Port, esbuild_config: An
 	config.Port = port
 	config.ESBuildConfig.update(esbuild_config)
 	app = FastAPI()
-	from .__init__ import apply_route_fs, apply_route_ts
+	from .__init__ import apply_route_fs, apply_route_html_ts, apply_route_ts
+	apply_route_html_ts(app)
 	apply_route_ts(app)
 	apply_route_fs(app)
 	uvicorn.run(app, host=host, port=config.Port, reload=False)

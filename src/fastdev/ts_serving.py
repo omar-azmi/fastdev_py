@@ -34,3 +34,24 @@ async def serve_ts(file: Path):
 		status_code=output_js_response["status_code"],
 		media_type="text/javascript"
 	)
+
+
+async def serve_html_ts(file: Path):
+	await build_server_loaded_promise
+	file_abspath = file.absolute().relative_to(SWD).as_posix()
+	output_html_response = post_data(
+		urljoin(build_server_url, "html"),
+		{"path": str(file_abspath)},
+		timeout=50_000,
+		headers={"content-type": "application/json"},
+	)
+	if output_html_response is None:
+		return PlainTextResponse(
+			f"failed to render the requested file:\n\t{file}",
+			status_code=503
+		)
+	return Response(
+		output_html_response["content"],
+		status_code=output_html_response["status_code"],
+		media_type="text/html"
+	)

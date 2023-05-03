@@ -23,6 +23,7 @@
 */
 import { CacheStore, ConnInfo, RequestRoute, addressToIP, cliParse, config, serve } from "./deps.ts"
 import { requestRouteGET as esbuildRequestRouteGET, requestRoutePOST as esbuildRequestRoutePOST, cache as esbuild_cache, esstop } from "./esbuild_builder.ts"
+import { requestRouteGET as htmlbuildRequestRouteGET, requestRoutePOST as htmlbuildRequestRoutePOST, cache as htmlbuild_cache } from "./html_builder.ts"
 
 
 const cli_args = cliParse(Deno.args)
@@ -35,7 +36,7 @@ console.debug("current config is:\n", config)
 Deno.chdir(config.cwd)
 
 
-const cache_stores: CacheStore[] = [esbuild_cache,]
+const cache_stores: CacheStore[] = [esbuild_cache, htmlbuild_cache]
 
 const cacheSummary: RequestRoute = {
 	methods: ["GET", "POST"],
@@ -48,7 +49,7 @@ const cacheSummary: RequestRoute = {
 		let total_cache_size = 0
 		for (const cache_store of cache_stores) {
 			for (const [hash, vfile] of Object.entries(cache_store)) {
-				const byte_size = vfile.contents.byteLength
+				const byte_size = vfile.contents.byteLength ?? vfile.contents.length
 				cache_vfile_meta[hash] = { size: byte_size, mtime: vfile.mtime }
 				total_cache_size += byte_size
 			}
@@ -112,6 +113,8 @@ const abortServer: RequestRoute = {
 const request_routes: RequestRoute[] = [
 	esbuildRequestRouteGET,
 	esbuildRequestRoutePOST,
+	htmlbuildRequestRouteGET,
+	htmlbuildRequestRoutePOST,
 	cacheSummary,
 	cacheClear,
 	sayHello,

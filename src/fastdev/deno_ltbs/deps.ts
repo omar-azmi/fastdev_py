@@ -67,20 +67,20 @@ export const hashObject: Hasher = (obj: object): string => {
 
 export type JSONstringify<T extends Record<string | number, any> | Array<any>> = string
 
-type VirtualFile = {
-	/** the resulting compiled response file as a bytes buffer */
-	contents: Uint8Array
+type VirtualFile<T extends BodyInit = BodyInit> = {
+	/** the resulting compiled response file as an http response body (usually bytes buffer or a string) */
+	contents: T
 	/** compile requested "path"'s last modified time (as a `Date`) */
 	mtime: Deno.FileInfo["mtime"]
 }
 
-export type CacheStore = {
-	[hash: ReturnType<Hasher>]: VirtualFile
+export type CacheStore<T extends BodyInit = BodyInit> = {
+	[hash: ReturnType<Hasher>]: VirtualFile<T>
 }
 
-export const cacheableQuery_Factory = <QUERY extends { path: string }>(
-	handle_query: (query: QUERY) => Promise<Uint8Array | undefined> | Uint8Array | undefined,
-	cache_store: CacheStore,
+export const cacheableQuery_Factory = <QUERY extends { path: string }, T extends BodyInit>(
+	handle_query: (query: QUERY) => Promise<T | undefined> | T | undefined,
+	cache_store: CacheStore<T>,
 	config_options?: {
 		headers?: HeadersInit,
 		error_response?: {
@@ -100,23 +100,23 @@ export const cacheableQuery_Factory = <QUERY extends { path: string }>(
 			{ path } = query
 		let
 			path_last_modified = new Date(),
-			file_bytes: Uint8Array | undefined = undefined
+			virtual_file: T | undefined = undefined
 		try { path_last_modified = (await Deno.stat(path))?.mtime ?? path_last_modified }
 		catch { }
 		if (config.cache && (cache_store[hash]?.mtime?.getTime() ?? -1) >= path_last_modified.getTime()) {
 			console.debug("return cached query:"); console.group(); console.debug(query); console.groupEnd()
-			file_bytes = cache_store[hash].contents
+			virtual_file = cache_store[hash].contents
 		} else {
-			file_bytes = await handle_query(query)
+			virtual_file = await handle_query(query)
 		}
-		if (file_bytes === undefined) return new Response(error_response.body, { status: error_response.status })
+		if (virtual_file === undefined) return new Response(error_response.body, { status: error_response.status })
 		if (config.cache) {
 			cache_store[hash] = {
-				contents: file_bytes,
+				contents: virtual_file,
 				mtime: path_last_modified,
 			}
 		}
-		return new Response(file_bytes, {
+		return new Response(virtual_file, {
 			status: 200,
 			headers,
 		})

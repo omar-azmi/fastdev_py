@@ -75,7 +75,7 @@ const buildQuery = async (query: BuildQuery): Promise<Uint8Array | undefined> =>
 	return output_js.contents
 }
 
-export const cache: CacheStore = {}
+export const cache: CacheStore<Uint8Array> = {}
 
 const cacheableBuildQuery = cacheableQuery_Factory(buildQuery, cache, {
 	headers: {
@@ -87,42 +87,12 @@ const cacheableBuildQuery = cacheableQuery_Factory(buildQuery, cache, {
 	}
 })
 
-/*
-const __cacheBuildQuery = async (query: BuildQuery) => {
-	const
-		hash = hashObject(query),
-		{ path } = query
-	let
-		path_last_modified = new Date(),
-		file_bytes: Uint8Array | undefined = undefined
-	try { path_last_modified = (await Deno.stat(path))?.mtime ?? path_last_modified }
-	catch { }
-	if (config.cache && (cache[hash]?.mtime?.getTime() ?? -1) >= path_last_modified.getTime()) {
-		console.debug("return cached query:"); console.group(); console.debug(query); console.groupEnd()
-		file_bytes = cache[hash].contents
-	} else {
-		file_bytes = await buildQuery(query)
-	}
-	if (file_bytes === undefined) return new Response("no javascript output was produced", { status: 404 })
-	if (config.cache) {
-		cache[hash] = {
-			contents: file_bytes,
-			mtime: path_last_modified,
-		}
-	}
-	return new Response(file_bytes, {
-		status: 200,
-		headers: { "content-type": "text/javascript" }
-	})
-}
-*/
-
-export const handleGETBuildQuery: Handler = (request) => {
+const handleGETBuildQuery: Handler = (request) => {
 	const query = searchParamsToObject<BuildQuery>(request.url, defaultSearchParams)
 	return cacheableBuildQuery(query)
 }
 
-export const handlePOSTBuildQuery: Handler = async (request) => {
+const handlePOSTBuildQuery: Handler = async (request) => {
 	const query = await request.json() as BuildQuery
 	return cacheableBuildQuery(query)
 }
@@ -144,8 +114,7 @@ export const requestRoutePOST: RequestRoute = {
 	handler: handlePOSTBuildQuery,
 	url_pattern: new URLPattern({
 		protocol: "http{s}?",
-		pathname: "/esbuild{/}?",
-		search: undefined
+		pathname: "/esbuild{/}?"
 	})
 }
 
