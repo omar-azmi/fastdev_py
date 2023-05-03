@@ -1,4 +1,4 @@
-import { Handler } from "https://deno.land/std@0.184.0/http/server.ts"
+import { ConnInfo, Handler } from "https://deno.land/std@0.184.0/http/server.ts"
 export { parse as cliParse } from "https://deno.land/std@0.184.0/flags/mod.ts"
 export { serve } from "https://deno.land/std@0.184.0/http/server.ts"
 export type { ConnInfo, Handler } from "https://deno.land/std@0.184.0/http/server.ts"
@@ -127,4 +127,11 @@ export interface RequestRoute {
 	url_pattern: URLPattern
 	methods: ("GET" | "POST")[]
 	handler: Handler
+}
+
+export const addressToIP = (
+	address: Deno.Addr & { path?: string, hostname?: string, port?: number }
+): string => {
+	const { path, hostname, port } = address
+	return path ?? `${hostname}:${port}`
 }

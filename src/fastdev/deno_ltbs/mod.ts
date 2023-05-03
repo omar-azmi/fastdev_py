@@ -21,7 +21,7 @@
  * - set cache of all files to dirty (hence requiring a forced re-compilation)
  *   - see {@link cacheDirtyServerPattern}, {@link cacheInfoServerPattern}
 */
-import { CacheStore, ConnInfo, RequestRoute, cliParse, config, serve } from "./deps.ts"
+import { CacheStore, ConnInfo, RequestRoute, addressToIP, cliParse, config, serve } from "./deps.ts"
 import { requestRouteGET as esbuildRequestRouteGET, requestRoutePOST as esbuildRequestRoutePOST, cache as esbuild_cache, esstop } from "./esbuild_builder.ts"
 
 
@@ -30,7 +30,8 @@ if (cli_args.cwd) config.cwd = cli_args.cwd
 if (cli_args.cache) config.cache = cli_args.cache === "false" ? false : true
 if (cli_args.port) config.port = parseInt(cli_args.port)
 if (cli_args.callback) config.callback = cli_args.callback
-console.debug("deno build server was invoked with the following cli args:\n", cli_args)
+console.debug("deno build server was invoked with the following cli config:\n", cli_args)
+console.debug("current config is:\n", config)
 Deno.chdir(config.cwd)
 
 
@@ -80,13 +81,13 @@ const sayHello: RequestRoute = {
 	methods: ["GET", "POST"],
 	url_pattern: new URLPattern({
 		protocol: "http{s}?",
-		pathname: "/cache/hello{/}?",
+		pathname: "/hello{/}?",
 	}),
 	handler: (request, connection_info): Response => {
 		const { localAddr, remoteAddr } = connection_info
-		console.log(remoteAddr, "says Hi")
+		console.log(addressToIP(remoteAddr), "says Hi")
 		return new Response(
-			`welcome to deno live-time-build-server\nyour IP is: ${remoteAddr}\nserver's IP is: ${localAddr}`,
+			`welcome to deno live-time-build-server\nyour IP is: ${addressToIP(remoteAddr)}\nserver's IP is: ${addressToIP(localAddr)}`,
 			{ status: 200 }
 		)
 	}
@@ -97,11 +98,11 @@ const abortServer: RequestRoute = {
 	methods: ["GET", "POST"],
 	url_pattern: new URLPattern({
 		protocol: "http{s}?",
-		pathname: "/cache/abort{/}?",
+		pathname: "/abort{/}?",
 	}),
 	handler: (request, connection_info): Response => {
 		const { remoteAddr } = connection_info
-		console.log(remoteAddr, "requested abort")
+		console.log(addressToIP(remoteAddr), "requested abort")
 		console.log("closing server...")
 		abort_controller.abort("user request")
 		return new Response()
