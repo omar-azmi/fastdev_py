@@ -45,7 +45,6 @@ async def serve_dir(directory: Path, base_dir: Path = SWD) -> HTMLResponse:
 		a 404 error with `PlainTextResponse` will be returned if the provided `directory` is not found
 	:rtype: HTMLResponse
 	"""
-	# TODO add docstring and include: base_dir must be absolute
 	directory = directory.absolute()
 	if not directory.is_dir():
 		return PlainTextResponse(

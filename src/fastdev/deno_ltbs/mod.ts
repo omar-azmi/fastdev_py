@@ -27,13 +27,13 @@ import { requestRouteGET as htmlbuildRequestRouteGET, requestRoutePOST as htmlbu
 
 
 const cli_args = cliParse(Deno.args)
-if (cli_args.cwd) config.cwd = cli_args.cwd
+config.cwd = cli_args.cwd ?? Deno.cwd()
 if (cli_args.cache) config.cache = cli_args.cache === "false" ? false : true
 if (cli_args.port) config.port = parseInt(cli_args.port)
 if (cli_args.callback) config.callback = cli_args.callback
 console.debug("deno build server was invoked with the following cli config:\n", cli_args)
 console.debug("current config is:\n", config)
-Deno.chdir(config.cwd)
+Deno.chdir(config.cwd!)
 
 
 const cache_stores: CacheStore[] = [esbuild_cache, htmlbuild_cache]

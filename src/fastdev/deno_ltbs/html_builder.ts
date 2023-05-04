@@ -1,10 +1,12 @@
-import { CacheStore, DefaultJSONValues, Handler, RequestRoute, cacheableQuery_Factory, pathIsAbsolute, pathRelative, searchParamsToObject } from "./deps.ts"
+import { CacheStore, DefaultJSONValues, Handler, RequestRoute, cacheableQuery_Factory, config, pathIsAbsolute, pathJoin, pathRelative, searchParamsToObject } from "./deps.ts"
 
 
 export interface BuildQuery {
 	/** path: "./path/to/index.html.ts" must be relative to current working directory */
 	path: string
 }
+
+const absolute_path_prefixes = ["http://", "https://", "file://"]
 
 const buildQuery = async (query: BuildQuery): Promise<string | undefined> => {
 	console.debug("new build query:")
@@ -13,7 +15,11 @@ const buildQuery = async (query: BuildQuery): Promise<string | undefined> => {
 	const
 		{ path } = query,
 		t0 = performance.now(),
-		{ default: output_html } = await import(path) as { default: string }
+		abspath = absolute_path_prefixes.reduce(
+			(is_prefix, prefix) => is_prefix || path.startsWith(prefix),
+			false,
+		) ? path : "file://" + pathJoin(config.cwd!, path)
+	const { default: output_html } = await import(abspath) as { default: string }
 	console.debug("compilation time:", performance.now() - t0, "ms")
 	console.debug("binary size:", output_html.length / 1024, "kb")
 	console.groupEnd()

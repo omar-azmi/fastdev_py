@@ -7,14 +7,14 @@ export { isAbsolute as pathIsAbsolute, join as pathJoin, relative as pathRelativ
 
 export type Config = {
 	port: number
-	cwd: string
+	cwd?: string
 	cache: boolean
 	callback?: string | URL
 }
 
 export const config: Config = {
 	port: 3000,
-	cwd: Deno.cwd(),
+	cwd: undefined,
 	cache: true,
 	callback: undefined
 }
@@ -27,9 +27,9 @@ export const searchParamsToObject = <T extends object>(
 ): T => {
 	default_values ??= {}
 	const
-		search_params = new URLSearchParams(url),
+		parsed_url = new URL(url),
 		obj: Partial<T> = {}
-	for (let [key, value] of search_params as Iterable<[keyof T, string]>) {
+	for (let [key, value] of parsed_url.searchParams as Iterable<[keyof T, string]>) {
 		value = (value === "" && default_values[key] !== undefined) ? default_values[key] as string : value
 		obj[key] = JSON.parse(decodeURIComponent(value))
 	}

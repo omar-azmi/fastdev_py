@@ -147,7 +147,7 @@ def apply_route_html_ts(
 	for ext in exts:
 		fastapi_app.add_api_route(
 			base_url + "{file_path:path}" + ext,
-			partial(route_ts, base_dir=base_dir.absolute(), ext=ext),
+			partial(route_html_ts, base_dir=base_dir.absolute(), ext=ext),
 			methods=["GET"]
 		)
 	return fastapi_app
@@ -181,7 +181,7 @@ async def route_fs(path: str, base_dir: Path = SWD):
 			# check if "./index.html" is available in the requested path directory, and redirect to it if it does exist
 			if abspath.joinpath("./index.html").is_file():
 				print("index.html found in requested directory. redirecting to it.")
-				RedirectResponse("./index.html")
+				return RedirectResponse("./index.html")
 			return await serve_dir(abspath, base_dir)
 		return RedirectResponse("./" + path.split("/")[-1] + "/")
 	else:
