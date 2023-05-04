@@ -18,7 +18,7 @@ const buildQuery = async (query: BuildQuery): Promise<string | undefined> => {
 		abspath = absolute_path_prefixes.reduce(
 			(is_prefix, prefix) => is_prefix || path.startsWith(prefix),
 			false,
-		) ? path : "file://" + pathJoin(config.cwd!, path)
+		) ? path : "file://" + (pathIsAbsolute(path) ? path : pathJoin(config.cwd!, path))
 	const { default: output_html } = await import(abspath) as { default: string }
 	console.debug("compilation time:", performance.now() - t0, "ms")
 	console.debug("binary size:", output_html.length / 1024, "kb")
